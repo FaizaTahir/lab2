@@ -1,0 +1,4 @@
+Let y=9;
+Let x=2;
+y=x+1;
+Print y

@@ -1,4 +1,6 @@
 Let y=9;
 Let x=2;
-y=x+1;
-Print y
+Let u=8;
+u=x-y*7
+Print u
+

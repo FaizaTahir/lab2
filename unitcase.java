@@ -2,6 +2,8 @@ package lab2;
 
 
 import java.io.*;
+import java.util.Scanner;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 public class unitcase {
@@ -12,12 +14,10 @@ public class unitcase {
 		int i = 0; 
 		String varName = null;
 		String varValue = null;
-		String varName1 =null;
-		String[] arr=new String[10];
-		int[] temp=new int[10];
-		int[] ans=new int[10];
 		
-		Myclasses object = new Myclasses();			// Variable Object
+		int mcounter=0;
+		
+	
 		
 		Myclasses[] Classarray = new Myclasses[8];
 		
@@ -34,6 +34,7 @@ public class unitcase {
 			while ((line = bufferedReader.readLine()) != null) {
 				if (line.contains("Let")) {
 					if (line.contains("=")) {
+						mcounter++;
 						String[] position = line.split(" ");
 						StringTokenizer st = new StringTokenizer(position[1], "=;");
 						while (st.hasMoreTokens()) {
@@ -58,71 +59,248 @@ public class unitcase {
 					else {
 						System.out.print("error!");
 					}}
-				else if (line.contains("+")) {
+				else if (line.contains("+")||line.contains("-")||line.contains("/")||line.contains("*")) {
 					
 					
-					int y=0;
 					
-					StringTokenizer st2 = new StringTokenizer(line, "=;+-");
-					while(st2.hasMoreTokens()) {
-					arr[y]=st2.nextToken(); 
-					System.out.println(arr[y] +"\t" );
-					y++;
-					} 
-					int tempno=0;
-					int check1=0;
-					int check2=0;
-					for(int l=0;l<y;l++){
-						if(arr[l].matches(".*\\d.*")){
-							   // contains a number
-							temp[tempno]=Integer.parseInt(arr[l]);
-							System.out.println(temp[tempno] +"\t" );
-							tempno++;
-							
-							
-							
-							} else{
-							   // does not contain a number
-								
-							/*	if (Classarray[l].getName()== arr[l] && l==0){
-									check1=1;
-								}*/
-								if (l!=0){
-									check2++;
-								}
-								
-								
-							}
-					}
-					int ans1=0;
-					for(int x1=0;x1<tempno;x1++){
-						ans1+=temp[x1];
+					
+					
+					Scanner scan = new Scanner(System.in);
+
+			        /* Create stacks for operators and operands */
+
+			        Stack<Integer> op  = new Stack<Integer>();
+
+			        Stack<Double> val = new Stack<Double>();
+
+			        /* Create temporary stacks for operators and operands */
+
+			        Stack<Integer> optmp  = new Stack<Integer>();
+
+			        Stack<Double> valtmp = new Stack<Double>();
+
+			        /* Accept expression */
+
+			        System.out.println("Evaluation Of Arithmetic Expression Using Stacks Test\n");
+
+			       
+			        String[] parts = line.split("=");
+			        String string1 = parts[0]; // 004
+			        String string2 = parts[1]; // 034556
+
+			        String input = line;
+			        input=string2;
+			        
+
+			        //input = "0" + input;
+
+			        input = input.replaceAll("-","+-");
+			        System.out.println("EQ:  "+ string1 +" = "+ string2);   
+
+			        /* Store operands and operators in respective stacks */
+
+			        String temp = "";
+
+			        for (int ii = 0;ii < input.length();ii++)
+
+			        {
+
+			            char ch = input.charAt(ii);
+			          
+			            if( Character.isLetter(ch)){
+				        	   String mch=Character.toString(ch);
+				        	 //  System.out.println("test11"+mch );
+				        	   
+				        	   for(int x3=0;x3<mcounter;x3++){
+									if (mch.equals(Classarray[x3].getName())){
+										//System.out.println("test22"+ Classarray[x3].getValue() );
+										//ch=Classarray[x3].getValue();
+										ch=Character.forDigit(Classarray[x3].getValue(), 10);
+										//System.out.println("test"+ch );
+									}
+									
+									}
+				        	   
+				        	   
+				           }//if   	
+			            
+			          
+			           
+
+			            if (ch == '-')
+
+			                temp = "-" + temp;
+
+			            else if (ch != '+' &&  ch != '*' && ch != '/')
+
+			               temp = temp + ch;
+
+			            else
+
+			            {
+			            	
+			            
+			            	//System.out.println(temp); System.out.println(ch);     
+
+			                val.push(Double.parseDouble(temp));
+
+			                op.push((int)ch);
+
+			                temp = "";
+
+			            }
+
+			        }
+
+			        val.push(Double.parseDouble(temp));
+
+			        /* Create char array of operators as per precedence */
+
+			        /* -ve sign is already taken care of while storing */
+
+			        char operators[] = {'/','*','+'};
+
+			        /* Evaluation of expression */
+
+			        for (int  ii = 0; ii < 3; ii++)
+
+			        {
+
+			            boolean it = false;
+
+			            while (!op.isEmpty())
+
+			            {
+
+			                int optr = op.pop();
+
+			                double v1 = val.pop();
+
+			                double v2 = val.pop();
+
+			                if (optr == operators[ii])
+
+			                {
+
+			                    /* if operator matches evaluate and store in temporary stack */
+
+			                    if (ii == 0)
+
+			                    {
+
+			                        valtmp.push(v2 / v1);
+
+			                        it = true;
+
+			                        break;
+
+			                    }
+
+			                    else if (ii == 1)
+
+			                    {
+
+			                        valtmp.push(v2 * v1);
+
+			                        it = true;
+
+			                        break;
+
+			                    }
+
+			                    else if (ii == 2)
+
+			                    {
+
+			                        valtmp.push(v2 + v1);
+
+			                        it = true;
+
+			                        break;
+
+			                    }                                        
+
+			                }
+
+			                else
+
+			                {
+
+			                    valtmp.push(v1);
+
+			                    val.push(v2);
+
+			                    optmp.push(optr);
+
+			                }                
+
+			            }    
+
+			            /* Push back all elements from temporary stacks to main stacks */            
+
+			            while (!valtmp.isEmpty())
+
+			                val.push(valtmp.pop());
+
+			            while (!optmp.isEmpty())
+
+			                op.push(optmp.pop());
+
+			            /* Iterate again for same operator */
+
+			            if (it)
+
+			                ii--;                            
+
+			        }  
+			        
+			      int  result= (val.pop()).intValue();
+
+			        System.out.println("Result = "+result);     
+					
+					
+					
+					
+					
+					
+					
+					int err=0;
+			        for(int x3=0;x3<mcounter;x3++){
+						if (string1.equals(Classarray[x3].getName())){
+							Classarray[x3].setValue(result);
+							err=1;
+							//System.out.println("printing value is "+Classarray[u].getValue() +"\t" );
+						}
+						
+						}
+					
+			        if(err == 0){
+						System.out.println("Variabe not defined");
+						 System.exit(0);
 					}
 					
-					for(int x2=1;x2<2;x2++){
-						ans1+=Classarray[x2].getValue();
-						System.out.println(Classarray[x2].getValue() +"\t" );
-					}
-					System.out.println("Answer ="+ans1 +"\t" );
-					for(int x3=0;x3<2;x3++){
-					if (arr[0].equals(Classarray[x3].getName())){
-						Classarray[x3].setValue(ans1);
-						//System.out.println("printing value is "+Classarray[u].getValue() +"\t" );
-					}
 					
-					}
+					
+					
+					
+					
+					
+					
+					
 				} 
 				
 				
 			else if (line.contains("Print")){
+				System.out.println(line);
 				String pvar = null;
 				StringTokenizer st3 = new StringTokenizer(line, " ");
 				while(st3.hasMoreTokens()) {
 					pvar=st3.nextToken(); 
-					System.out.println(pvar +"\t" );
+					//System.out.println(pvar +"\t" );
 					
 					} 
-				for(int u=0;u<2;u++){
+				for(int u=0;u<mcounter;u++){
+					
 					if (pvar.equals(Classarray[u].getName())){
 						System.out.println("printing value is "+Classarray[u].getValue() +"\t" );
 					}
@@ -130,6 +308,7 @@ public class unitcase {
 				}
 				}
 				i++;
+				
 				
 			}
 			
@@ -146,9 +325,5 @@ public class unitcase {
 			
 		}
 	}
-	public void Equating(){
-		int operators[]=new int [5];
-		
-		
-	}
+	
 }
